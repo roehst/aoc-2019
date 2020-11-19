@@ -2,12 +2,12 @@ def fuel(mass):
     return mass // 3 - 2
 
 
-def fuel_recursive(mass, fuel_requirement=0):
-    if mass > 0:
-        return fuel_recursive(fuel(mass), fuel_requirement + mass)
-    else:
-        return fuel_requirement
-
+def fuel_(mass):
+    total = 0
+    while mass > 0:
+        total += mass
+        mass = fuel(mass)
+    return total
 
 def read_masses():
     contents = open("Day1.txt", "r").read().strip()
@@ -23,4 +23,4 @@ if __name__ == "__main__":
     print(sum(map(fuel, masses)))
 
     # To get the fuel mass only, we subtract the mass afterwards
-    print(sum(map(fuel_recursive, masses)) - sum(masses))
+    print(sum(map(fuel_, masses)) - sum(masses))
