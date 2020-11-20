@@ -30,19 +30,21 @@ update (x:xs) n v = x : update xs (n - 1) v
 
 eval :: Program -> Int -> Int
 eval program ip =
-  let op = program !! ip
-   in case op of
-        1 ->
-          let a = program !! (program !! (ip + 1))
-           in let b = program !! (program !! (ip + 2))
-               in let dest = program !! (ip + 3)
-                   in let program' = update program dest (a + b)
-                       in eval program' (ip + 4)
-        2 ->
-          let a = program !! (program !! (ip + 1))
-           in let b = program !! (program !! (ip + 2))
-               in let dest = program !! (ip + 3)
-                   in let program' = update program dest (a * b)
-                       in eval program' (ip + 4)
-        99 -> program !! 0
-        _ -> error $ "Unknown opcode " ++ show op
+  let readIndirect pos = program !! (program !! pos)
+   in let readDirect pos = program !! pos
+       in let op = program !! ip
+           in case op of
+                1 ->
+                  let a = readIndirect (ip + 1)
+                   in let b = readIndirect (ip + 2)
+                       in let dest = readDirect (ip + 3)
+                           in let program' = update program dest (a + b)
+                               in eval program' (ip + 4)
+                2 ->
+                  let a = readIndirect (ip + 1)
+                   in let b = readIndirect (ip + 2)
+                       in let dest = readDirect (ip + 3)
+                           in let program' = update program dest (a * b)
+                               in eval program' (ip + 4)
+                99 -> program !! 0
+                _ -> error $ "Unknown opcode " ++ show op
