@@ -1,5 +1,4 @@
-{-# LANGUAGE RecordWildCards, ScopedTypeVariables,
-  FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -Wall #-}
 
 module Day2 where
@@ -39,6 +38,24 @@ main = do
   source <- readFile "Day2.txt"
   let machine = (createFromSource source) :: MachineL
   print $ run machine
+  case search machine inputList 19690720 of
+    Just (a, b) -> print $ (100 * a + b)
+    Nothing -> print "No solution found"
+
+search :: Machine a => a -> [(Int, Int)] -> Int -> Maybe (Int, Int)
+search _ [] _ = Nothing
+search m (x:xs) goal
+  | runOnInputPair m x == goal = Just x
+  | otherwise = search m xs goal
+
+inputList :: [(Int, Int)]
+inputList = [(a, b) | a <- [0 .. 99], b <- [0 .. 99]]
+
+runOnInputPair :: Machine a => a -> (Int, Int) -> Int
+runOnInputPair m (a, b) = runWithInputs a b m
+
+runWithInputs :: Machine a => Int -> Int -> a -> Int
+runWithInputs a b m = run (writeDirect 2 b (writeDirect 1 a m))
 
 run :: Machine a => a -> Int
 run m =
